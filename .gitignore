@@ -1,0 +1,7 @@
+.tox
+.venv
+.env
+*.egg-info
+.vscode
+__pycache__
+*.pyc
