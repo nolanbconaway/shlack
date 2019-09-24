@@ -1,4 +1,8 @@
-"""Utilities for reading config files."""
+"""Utilities for reading config files.
+
+Underscore in the name to prevent collison with existing config module. Also this is 
+not a user-facing submodule so I don't care about prettiness.
+"""
 import os
 from importlib import util as importutil
 
