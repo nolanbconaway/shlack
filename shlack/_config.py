@@ -45,6 +45,29 @@ def file_to_module(filepath):
         return string_to_module(fh.read())
 
 
+def dict_to_module(d):
+    """Convert a dict to a module object with one attribute per key.
+
+    Parameters
+    ----------
+    d : Dict[str, any]
+        Dictionary to convert.
+
+    Returns
+    -------
+    module : module
+        A module object containing the values of the dictionary.
+
+    """
+    # make an empty python code string. we will add to this
+    code = ""
+
+    for k, v in d.items():
+        code += '\n%s="%s"' % (k, v)
+
+    return string_to_module(code)
+
+
 def env_to_module(*vars):
     """Read environment variables into a python module.
 
@@ -59,16 +82,7 @@ def env_to_module(*vars):
         A module object containing the values of the keys which are defined.
 
     """
-    # make an empty python code string. we will add to this
-    code = ""
-
-    # add one line per variable if its value is defined.
-    for var in vars:
-        val = os.getenv(var)
-        if val is not None:
-            code += '\n%s="%s"' % (var, val)
-
-    return string_to_module(code)
+    return dict_to_module({k: os.getenv(k) for k in vars if os.getenv(k) is not None})
 
 
 def extract_config(keywords, modules):

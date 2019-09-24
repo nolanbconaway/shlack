@@ -42,6 +42,13 @@ def test_string_to_module_error():
 
 
 @pytest.mark.parametrize("value_of_a", [("1"), ("STRING VALUE")])
+def test_dict_to_module(value_of_a):
+    """Test that the env to module function extracts the expected data."""
+    module_value = _config.dict_to_module({"a": value_of_a}).a
+    assert module_value == value_of_a
+
+
+@pytest.mark.parametrize("value_of_a", [("1"), ("STRING VALUE")])
 def test_env_to_module(value_of_a, monkeypatch):
     """Test that the env to module function extracts the expected data."""
     monkeypatch.setenv("a", value_of_a)
