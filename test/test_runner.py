@@ -1,5 +1,5 @@
 """Tests for the config reader module."""
-
+import os
 import time
 
 from shlack.runner import detachify
@@ -35,3 +35,19 @@ def test_detachify(tmp_path):
 
     with open(tmp_file, "r") as f:
         assert now_str == f.read()
+
+
+def test_detachify_env_persist(monkeypatch, tmp_path):
+    """Test that the user env is used in the deatched process."""
+    tmp_file = tmp_path / "temporary.txt"
+    now_str = str(round(time.time(), 3))
+    monkeypatch.setenv("ENV_VARIABLE", now_str)
+
+    def f():
+        os.system("echo $ENV_VARIABLE > %s" % tmp_file)
+
+    detachify(f)()
+    time.sleep(0.05)
+
+    with open(tmp_file, "r") as f:
+        assert now_str == f.read().strip()
