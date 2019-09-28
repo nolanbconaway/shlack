@@ -49,7 +49,7 @@ def test_detachify_env_persist(monkeypatch, tmp_path):
     detachify(f)()
     time.sleep(0.05)
 
-    with open(tmp_file, "r") as f:
+    with open(str(tmp_file), "r") as f:
         assert now_str == f.read().strip()
 
 
