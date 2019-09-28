@@ -1,4 +1,4 @@
-"""Tests for the config reader module."""
+"""Tests for the runner module."""
 import os
 import time
 
