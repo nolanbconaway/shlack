@@ -1,5 +1,6 @@
 """Utilities for launching processes in background tasks."""
 import os
+import subprocess
 from multiprocessing import Process
 
 
@@ -34,3 +35,17 @@ def detachify(func):
         return
 
     return wrapper
+
+
+def shell_command(command_str):
+    """Run a shell command as a string, returning a tuple of (stdout, stderr)."""
+    try:
+        out = subprocess.check_output(command_str, shell=True, stderr=subprocess.STDOUT)
+        if out is not None:
+            out = out.decode()
+        err = None
+    except subprocess.CalledProcessError as e:
+        err = e.output.decode()
+        out = None
+
+    return out, err

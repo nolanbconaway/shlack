@@ -2,7 +2,7 @@
 import os
 import time
 
-from shlack.runner import detachify
+from shlack.runner import detachify, shell_command
 
 
 def test_detachify(tmp_path):
@@ -51,3 +51,17 @@ def test_detachify_env_persist(monkeypatch, tmp_path):
 
     with open(tmp_file, "r") as f:
         assert now_str == f.read().strip()
+
+
+def test_shell_good_command():
+    """Test that shell command works when the command is known to work."""
+    out, err = shell_command("ls .")
+    assert err is None
+    assert "test" in out
+
+
+def test_shell_bad_command():
+    """Test that shell command works when the command is known to work."""
+    out, err = shell_command("ls adasdasdas")
+    assert out is None
+    assert "adasdasdas" in err
