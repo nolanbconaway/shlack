@@ -7,6 +7,5 @@ setup(
     version="0.1",
     packages=["shlack", "shlack.cli"],
     install_requires=["slacker", "click"],
-    extras_require={"dev": ["pytest", "black", "pydocstyle"]},
     entry_points={"console_scripts": ["shlack = shlack.cli.__main__:cli"]},
 )
