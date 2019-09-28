@@ -46,13 +46,15 @@ def main(task, channel, oauth_api_token):
 
         attachments = []
         if out is not None:
-            attachments += attachment_formatter(
-                {"": "```$ %s\n%s```" % (command_joined, out)}
+            attachments.append(
+                attachment_formatter({"": "```$ %s\n%s```" % (command_joined, out)})
             )
 
         if err is not None:
-            attachments += attachment_formatter(
-                {"": "```$ %s\n%s```" % (command_joined, err)}, color="danger"
+            attachments.append(
+                attachment_formatter(
+                    {"": "```$ %s\n%s```" % (command_joined, err)}, color="danger"
+                )
             )
 
         status_message = (

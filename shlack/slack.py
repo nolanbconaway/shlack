@@ -17,13 +17,16 @@ def slacker_factory(api_key=None):
     return Slacker(api_key)
 
 
-def attachment_formatter(attachment_dict, color="#DCDEE0"):
-    """Format a dict to become a slack attachment.
+def attachment_formatter(attachment, color="#DCDEE0"):
+    """Format a dict or string to become a slack attachment.
+
+    If attachment is a dict, it will gave one item per key, titled by the name of the 
+    key. If a string, there will be one item with an empty title.
     
     Basically copied verbatim from jarjar. Thx jeff :-)
     """
-    attachments = dict(fallback="", color=color, fields=[], ts=time.time())
-
+    result = dict(fallback="", color=color, fields=[], ts=time.time())
+    attachment_dict = attachment if hasattr(attachment, "keys") else {"": attachment}
     for key in attachment_dict:
 
         if isinstance(attachment_dict[key], str):
@@ -34,7 +37,5 @@ def attachment_formatter(attachment_dict, color="#DCDEE0"):
             except UnicodeEncodeError:
                 outval = unicode(attachment_dict[key])
 
-        attachments["fields"].append(
-            dict(title=key, value=outval, short=len(outval) < 20)
-        )
-    return [attachments]
+        result["fields"].append(dict(title=key, value=outval, short=len(outval) < 20))
+    return result
