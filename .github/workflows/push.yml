@@ -23,7 +23,8 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install .[dev]
+          pip3 install pytest black pydocstyle
+          pip install .
 
       - name: Pydocstyle
         run: pydocstyle shlack --verbose
