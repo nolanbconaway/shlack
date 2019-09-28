@@ -1,5 +1,4 @@
 """CLI handler for running a task."""
-import subprocess
 import sys
 
 import click
@@ -7,32 +6,21 @@ import click
 from shlack.runner import detachify, shell_command
 from shlack.slack import attachment_formatter, slacker_factory
 
+from . import common_options
+
 
 @click.command()
 @click.argument("task", nargs=-1, type=str)
-@click.option(
-    "-c",
-    "--channel",
-    "channel",
-    type=str,
-    envvar="SLACK_CHANNEL",
-    help=(
-        "Channel to post within. Read from $SLACK_CHANNEL if not provided. "
-        "This can be a slack @username (though that is now deprecated), #channel or "
-        "user/channel ID."
-    ),
-)
-@click.option(
-    "-t",
-    "--api-token",
-    "oauth_api_token",
-    default=None,
-    type=str,
-    envvar="SLACK_OAUTH_API_TOKEN",
-    help="Oauth API Token. Read from $SLACK_OAUTH_API_TOKEN if not provided.",
-)
-def main(task, channel, oauth_api_token):
-    """Run a task detachedly and send a slack message after."""
+@common_options
+def main(oauth_api_token, channel, task):
+    """Run a task detachedly and send a slack message after.
+    
+    $ shlack task 'sleep 5 && echo "FROM THE PAST!"' -c ... -t ...
+
+    Wait 5 seconds and you should see a nicely formatted message in your slack 
+    workspace.
+
+    """
     # if task is not defined, we are done
     if not task:
         sys.exit(0)
