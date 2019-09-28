@@ -23,9 +23,8 @@ def detachify(func):
     """
     # create a process fork and run the function
     def forkify(*args, **kwargs):
-        pid = os.fork()
-        if pid != 0:
-            return pid
+        if os.fork() != 0:
+            return
         func(*args, **kwargs)
 
     # wrapper to run the forkified function
