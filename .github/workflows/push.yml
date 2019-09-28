@@ -23,15 +23,20 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip3 install --upgrade pip
-          pip3 install pytest black pydocstyle
+          if [[ ${{ matrix.python-version }} -ge '3.6' ]]; then 
+            pip install black; 
+          fi
+          pip install pytest pydocstyle
           pip install .
 
       - name: Pydocstyle
         run: pydocstyle shlack --verbose
 
       - name: Black
-        run: black shlack test --check --verbose
+        run: |
+          if [[ ${{ matrix.python-version }} -ge '3.6' ]]; then 
+            black shlack test --check --verbose
+          fi
 
       - name: Pytest
         run: pytest . -v
