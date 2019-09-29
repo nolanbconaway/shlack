@@ -19,7 +19,7 @@ _attach_help = (
 )
 @common_options
 def main(oauth_api_token, channel, message, attach):
-    """Send a message and/or attachments form the command line.
+    """Send a message and/or attachments from the command line.
 
     Attachments can be provided as key-value pairs
     
