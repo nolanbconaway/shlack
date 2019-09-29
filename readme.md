@@ -26,17 +26,31 @@ Now send yourself a message! shlack will read your token from the variable you e
 $ shlack message 'Hello!' --channel '@nolan'
 ```
 
+In your slack workspace:
+
+<p align="center">
+  <img src="img/hello.png">
+</p>
+
 Add an attachment:
 
 ``` sh
 $ shlack message 'Hello!' -c '@nolan' --attach 'Date' "$(date)"
 ```
 
+<p align="center">
+  <img src="img/hello_with_attach.png">
+</p>
+
 shlack can also send you a notification after a long-running task has completed.
 
 ``` sh
 $ shlack task 'sleep 10 && echo done' --channel '@nolan'
 ```
+
+<p align="center">
+  <img src="img/sleep_10.png">
+</p>
 
 Running that will spin up a process detached from your terminal session, so you can  grab some lunch :-).
 
@@ -98,7 +112,7 @@ The page will refresh and at the top you'll find a new OAuth Access Token. Copy 
 Now you can style the app as you see fit :). Hit the "Basic Information" tab at the top of the sidebar and scroll down to the "Display Information" section. Style to your liking. I use this photo which I found by searching "dog with cowboy hat" on the internet.
 
 <p align="center">
-  <a href='/img/hero.png'><img src="/img/hero.png" width="200" height="200"></a>
+  <a href='img/hero.png'><img src="img/hero.png" width="200" height="200"></a>
 </p>
 
 Then you're done! Enjoy your shlack app.
@@ -107,7 +121,7 @@ Then you're done! Enjoy your shlack app.
 
 * [ ] Clip very large attachments. Slack will do it automatically but its NOT graceful. Maybe attach as files instead? This is much easier thanks to slacker :-).
 * [ ] Write some tooling to help users through errors when their display names are not the same as their usernames. Maybe a command to search users. Maybe just some documentation.
-* [ ] Add images in the docs.
+* [x] Add images in the docs.
 * [ ] Add option to enable / disable stdout inclusion in `shlack task` .
 * [ ] Surface child PID to user in `shlack task` .
 
