@@ -3,6 +3,7 @@ import subprocess
 
 import pytest
 from click.testing import CliRunner
+
 from shlack import slack
 from shlack.cli import message as message_cli
 from shlack.cli import task as task_cli
