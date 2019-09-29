@@ -30,9 +30,9 @@ def main(oauth_api_token, channel, message, attach):
     slacker = slacker_factory(api_key=oauth_api_token)
 
     # format message elements
-    attach = attachment_formatter(dict(attach))
+    attachments = attachment_formatter(dict(attach))
 
-    if not attach:
+    if not attachments:
         attachments = None
     else:
         attachments = [attachments]

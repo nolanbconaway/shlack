@@ -1,6 +1,5 @@
 """Tests for the slack module."""
 import pytest
-
 from shlack.slack import attachment_formatter
 
 
@@ -44,14 +43,13 @@ from shlack.slack import attachment_formatter
             ),
         ),
         (
-            {1: 1, 2: 2, "many": "items"},
+            {1: 1, 2: 2},
             dict(
                 fallback="",
                 color="",
                 fields=[
                     dict(title=1, value="1", short=True),
                     dict(title=2, value="2", short=True),
-                    dict(title="many", value="items", short=True),
                 ],
                 ts=0,
             ),
