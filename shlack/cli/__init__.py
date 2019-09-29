@@ -37,7 +37,7 @@ def common_options(func):
 def cli():
     """Send slack messages from the command line.
     
-    This command line tool does nothing in tself, call one of the below described 
+    This command line tool does nothing in itself, call one of the below described 
     subcommands to get started!
     """
     # Do nothing. All function is in the subcommands.
