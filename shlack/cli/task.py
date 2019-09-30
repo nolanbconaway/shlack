@@ -18,8 +18,20 @@ _detach_help = (
 @click.command()
 @click.argument("task", nargs=-1, type=str)
 @click.option("--detach/--no-detach", "detach", default=True, help=_detach_help)
+@click.option(
+    "--stdout/--no-stdout",
+    "send_stdout",
+    default=True,
+    help="Option to include or exclude task stdout in the slack message, if any.",
+)
+@click.option(
+    "--stderr/--no-stderr",
+    "send_stderr",
+    default=True,
+    help="Option to include or exclude task stderr in the slack message, if any.",
+)
 @common_options
-def main(oauth_api_token, channel, detach, task):
+def main(oauth_api_token, channel, detach, send_stdout, send_stderr, task):
     """Run a task and send a slack message after.
     
     $ shlack task 'sleep 5 && echo "FROM THE PAST!"' -c ... -t ...
@@ -33,6 +45,7 @@ def main(oauth_api_token, channel, detach, task):
     """
     # if task is not defined, we are done
     if not task:
+        click.echo("shlack task called without a task!")
         sys.exit(0)
 
     # define messenger
@@ -43,25 +56,24 @@ def main(oauth_api_token, channel, detach, task):
         out, err = shell_command(command_joined)
 
         attachments = []
-        if out is not None:
-            attachments.append(
-                attachment_formatter({"": "```$ %s\n%s```" % (command_joined, out)})
-            )
+        if send_stdout and out not in (None, ""):
+            attachments.append(attachment_formatter({"": "```%s```" % (out)}))
 
-        if err is not None:
+        if send_stderr and err not in (None, ""):
             attachments.append(
-                attachment_formatter(
-                    {"": "```$ %s\n%s```" % (command_joined, err)}, color="danger"
-                )
+                attachment_formatter({"": "```%s```" % (err)}, color="danger")
             )
 
         status_message = (
-            "succeeded" if err is None else "exited with nonzero exit status"
+            "Command succeeded"
+            if err is None
+            else "Command exited with nonzero exit status"
         )
+
         slacker.chat.post_message(
             channel,
-            "Command `%s` %s." % (command_joined, status_message),
-            attachments=attachments,
+            "%s.\n```$ %s```" % (status_message, command_joined),
+            attachments=None if not attachments else attachments,
         )
 
         # echo out if not detached

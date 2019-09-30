@@ -20,7 +20,16 @@ class MockChat:
 
 @pytest.mark.parametrize(
     "command, is_valid",
-    [("echo 1", True), ("ls INVALID_PATH", False), ("INVALD_COMMAND", False)],
+    [
+        (["echo", "1"], True),
+        (["echo", "1", "--no-stdout"], True),
+        (["echo", "1", "--no-stderr"], True),
+        (["echo", "1", "--no-stdout", "--no-stderr"], True),
+        (["INVALD_COMMAND"], False),
+        (["INVALID_COMMAND", "--no-stdout"], False),
+        (["INVALID_COMMAND", "--no-stderr"], False),
+        (["INVALID_COMMAND", "--no-stdout", "--nostderr"], False),
+    ],
 )
 def test_task(monkeypatch, command, is_valid):
     """Test that the task logic does not except out.
@@ -32,7 +41,7 @@ def test_task(monkeypatch, command, is_valid):
     monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
 
     runner = CliRunner()
-    result = runner.invoke(task_cli.main, [command, "--no-detach"])
+    result = runner.invoke(task_cli.main, command + ["--no-detach"])
 
     if is_valid:
         assert result.exit_code == 0
