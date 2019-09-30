@@ -68,4 +68,4 @@ def test_message(monkeypatch, args):
 )
 def test_cli_installed(args):
     """Test that the CLI has been installed."""
-    print(subprocess.check_output(args))
+    subprocess.check_output(args)
