@@ -56,10 +56,10 @@ def main(oauth_api_token, channel, detach, send_stdout, send_stderr, task):
         out, err = shell_command(command_joined)
 
         attachments = []
-        if send_stdout and out not in (None, ""):
+        if send_stdout and out:
             attachments.append(attachment_formatter({"": "```%s```" % (out)}))
 
-        if send_stderr and err not in (None, ""):
+        if send_stderr and err:
             attachments.append(
                 attachment_formatter({"": "```%s```" % (err)}, color="danger")
             )
