@@ -21,6 +21,7 @@ class MockChat:
 @pytest.mark.parametrize(
     "command, is_valid",
     [
+        ([], True),
         (["echo", "1"], True),
         (["INVALD_COMMAND"], False),
         (["echo", "1", "-f", "text"], True),
@@ -97,6 +98,8 @@ def test_message(monkeypatch, args):
         ("python", "-m", "shlack.cli", "--help"),
         ("python", "-m", "shlack.cli", "task", "--help"),
         ("python", "-m", "shlack.cli", "message", "--help"),
+        ("python", "-m", "shlack.cli.task", "--help"),
+        ("python", "-m", "shlack.cli.message", "--help"),
     ],
 )
 def test_cli_installed(args):

@@ -1,7 +1,7 @@
 """Tests for the slack module."""
 import pytest
 
-from shlack.slack import attach_text_data, attachment_formatter
+from shlack.slack import attach_text_data, attachment_formatter, slacker_factory
 
 
 @pytest.mark.parametrize(
@@ -61,6 +61,13 @@ def test_attachment_formatter(monkeypatch, attachment, formatted):
     """Test the attachment formatter."""
     monkeypatch.setattr("time.time", lambda: 0)
     assert attachment_formatter(attachment, color="") == formatted
+
+
+def test_slacker_factor_no_key_error(monkeypatch):
+    """Test that an error is raise if there is no API key."""
+    monkeypatch.delenv("SLACK_OAUTH_API_TOKEN", raising=False)
+    with pytest.raises(EnvironmentError):
+        slacker_factory()
 
 
 def test_attach_text_data_file(monkeypatch):
