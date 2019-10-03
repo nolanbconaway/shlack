@@ -88,12 +88,8 @@ Then you're done! Enjoy your shlack app.
 
 ## Todo
 
-* [x] Clip very large attachments. Slack will do it automatically but its NOT graceful. Maybe attach as files instead? This is much easier thanks to slacker :-).
 * [ ] Write some tooling to help users through errors when their display names are not the same as their usernames. Maybe a command to search users. Maybe just some documentation.
-* [x] Add images in the docs.
-* [x] Add option to enable / disable stdout inclusion in `shlack task` .
 * [ ] Surface child PID to user in `shlack task` .
-* [x] Add file upload option for message
 * [ ] get URLs in attachments to unfurl.
 * [ ] migrate to blocks https://api.slack.com/messaging/attachments-to-blocks
 
