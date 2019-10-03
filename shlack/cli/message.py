@@ -1,12 +1,20 @@
 """CLI handler for running a task."""
+import sys
+
 import click
 
-from shlack.slack import attachment_formatter, slacker_factory
+from shlack import slack
 
 from . import common_options
 
 _attach_help = (
     "A key value pair, where the key is the title of the attachment ('' "
+    + "if not needed) and the value is the attachment body. Can be provided multiple "
+    + "times, such as in -a key1 val1 -a key2 val2."
+)
+
+_upload_help = (
+    "Files "
     + "if not needed) and the value is the attachment body. Can be provided multiple "
     + "times, such as in -a key1 val1 -a key2 val2."
 )
@@ -17,8 +25,15 @@ _attach_help = (
 @click.option(
     "-a", "--attach", "attach", nargs=2, multiple=True, type=str, help=_attach_help
 )
+@click.option(
+    "-u",
+    "--upload",
+    "upload",
+    type=click.Path(exists=True),
+    help="Option to upload a file.",
+)
 @common_options
-def main(oauth_api_token, channel, message, attach):
+def main(oauth_api_token, channel, message, attach, upload):
     """Send a message and/or attachments from the command line.
 
     Attachments can be provided as key-value pairs
@@ -27,18 +42,35 @@ def main(oauth_api_token, channel, message, attach):
 
     """
     # define messenger
-    slacker = slacker_factory(api_key=oauth_api_token)
+    slacker = slack.slacker_factory(api_key=oauth_api_token)
 
     # format message elements
     if not attach:
         attachments = None
     else:
-        attachments = [attachment_formatter(dict(attach))]
+        attachments = [slack.attachment_formatter(dict(attach))]
 
     if message == "":
         message = None
 
-    slacker.chat.post_message(channel, text=message, attachments=attachments)
+    if upload is not None:
+
+        if attachments is None:
+            attachments = []
+
+        attachments.append(
+            slack.attachment_formatter(
+                {upload: slack.upload_file_get_permalink(slacker, file_=upload)}
+            )
+        )
+
+    if (None, None, None) == (message, attachments, upload):
+        click.echo("No message, attachments, or files to upload.")
+        sys.exit(1)
+
+    slacker.chat.post_message(
+        channel, text=message, attachments=attachments, unfurl_links=True
+    )
 
 
 if __name__ == "__main__":

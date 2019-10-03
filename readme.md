@@ -124,5 +124,7 @@ Then you're done! Enjoy your shlack app.
 * [x] Add images in the docs.
 * [x] Add option to enable / disable stdout inclusion in `shlack task` .
 * [ ] Surface child PID to user in `shlack task` .
-* [ ] Add file upload option for message
+* [x] Add file upload option for message
+* [ ] get URLs in attachments to unfurl.
+* [ ] migrate to blocks https://api.slack.com/messaging/attachments-to-blocks
 
