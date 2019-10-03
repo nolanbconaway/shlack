@@ -13,12 +13,6 @@ _attach_help = (
     + "times, such as in -a key1 val1 -a key2 val2."
 )
 
-_upload_help = (
-    "Files "
-    + "if not needed) and the value is the attachment body. Can be provided multiple "
-    + "times, such as in -a key1 val1 -a key2 val2."
-)
-
 
 @click.command()
 @click.argument("message", nargs=1, default="", type=str)
@@ -58,15 +52,12 @@ def main(oauth_api_token, channel, message, attach, upload):
         if attachments is None:
             attachments = []
 
-        attachments.append(
-            slack.attachment_formatter(
-                {upload: slack.upload_file_get_permalink(slacker, file_=upload)}
-            )
-        )
+        permalink = slack.upload_file_get_permalink(slacker, file_=upload)
+        attachments.append(slack.attachment_formatter({upload: permalink}))
 
+    # exit if nothing to do
     if (None, None, None) == (message, attachments, upload):
-        click.echo("No message, attachments, or files to upload.")
-        sys.exit(1)
+        sys.exit(0)
 
     slacker.chat.post_message(
         channel, text=message, attachments=attachments, unfurl_links=True

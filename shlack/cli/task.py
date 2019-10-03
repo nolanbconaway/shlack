@@ -42,21 +42,14 @@ def attach_output(slacker, text_data, name, out_format, color):
         permalink = slack.upload_file_get_permalink(
             slacker, content=text_data, filetype="text", filename=name, title=name
         )
-        return slack.attachment_formatter(
-            {("%s upload" % name): permalink or "`SlackError` raised."}, color=color
-        )
+        content = permalink or "`SlackError` raised."
+        title = "%s upload" % name
+        return slack.attachment_formatter({title: content}, color=color)
 
     # attach if the user asked or auto and the text are short
     if out_format == "text" or (out_format == "auto" and not is_long):
-        if is_long:
-            return slack.attachment_formatter(
-                {
-                    "": "```%s```"
-                    % (text_data[:MAX_TEXT_LENGTH] + "\n ... [remainder clipped] ...")
-                },
-                color=color,
-            )
-        return slack.attachment_formatter({"": "```%s```" % (text_data)}, color=color)
+        content = text_data[:MAX_TEXT_LENGTH] + "\n[ ... ]" if is_long else text_data
+        return slack.attachment_formatter({"": "```%s```" % (content)}, color=color)
 
 
 @click.command()
@@ -103,27 +96,18 @@ def main(oauth_api_token, channel, detach, out_format, task):
         ]
 
         # add more attachments if asked for
-        if out_format != "none":
+        if out and out_format != "none":
+            attachments.append(
+                attach_output(slacker, out, "stdout", out_format, "#439FE0")
+            )
 
-            if out:
-                attachments.append(
-                    attach_output(slacker, out, "stdout", out_format, "#439FE0")
-                )
-
-            if err:
-                attachments.append(
-                    attach_output(slacker, err, "stderr", out_format, "danger")
-                )
-
-        # add a message
-        status_message = (
-            "Command succeeded"
-            if err is None
-            else "Command exited with nonzero exit status"
-        )
+        if err and out_format != "none":
+            attachments.append(
+                attach_output(slacker, err, "stderr", out_format, "danger")
+            )
 
         # send the data
-        slacker.chat.post_message(channel, status_message, attachments=attachments)
+        slacker.chat.post_message(channel, "", attachments=attachments)
 
         # echo out if not detached
         if not detach:

@@ -31,6 +31,7 @@ def upload_file_get_permalink(slacker, raise_error=False, *args, **kwargs):
     This simply handles the return value of slacker.files.upload. The signature for 
     slacker.files.upload is:
 
+    file_=None,
     content=None,
     filetype=None,
     filename=None,
