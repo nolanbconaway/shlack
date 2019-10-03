@@ -7,7 +7,6 @@ from click.testing import CliRunner
 from shlack import slack
 from shlack.cli import message as message_cli
 from shlack.cli import task as task_cli
-from shlack.cli.task import attach_output
 
 
 class MockChat:
@@ -97,51 +96,3 @@ def test_message(monkeypatch, args):
 def test_cli_installed(args):
     """Test that the CLI has been installed."""
     subprocess.check_output(args)
-
-
-def test_task_attach_file(monkeypatch):
-    """Test the task output attchment logic when a file is expected."""
-    monkeypatch.setattr(
-        "shlack.slack.upload_file_get_permalink", lambda *a, **kw: "URL"
-    )
-    monkeypatch.setenv("SLACK_OAUTH_API_TOKEN", "FAKE")
-    monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
-    field = attach_output(
-        slacker="fake", text_data="data", name="name", out_format="file", color=""
-    )["fields"][0]
-    assert "name" in field["title"]
-    assert "URL" in field["value"]
-
-    # add auto format test
-    field = attach_output(
-        slacker="fake", text_data="1" * 1001, name="name", out_format="auto", color=""
-    )["fields"][0]
-    assert "name" in field["title"]
-    assert "URL" in field["value"]
-
-
-def test_task_attach_text(monkeypatch):
-    """Test the task output attchment logic when text is expected."""
-    monkeypatch.setenv("SLACK_OAUTH_API_TOKEN", "FAKE")
-    monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
-    field = attach_output(
-        slacker="fake", text_data="data", name="name", out_format="text", color=""
-    )["fields"][0]
-    assert not field["title"]
-    assert "data" in field["value"]
-
-    # auto format test
-    field = attach_output(
-        slacker="fake", text_data="data", name="name", out_format="auto", color=""
-    )["fields"][0]
-    assert not field["title"]
-    assert "data" in field["value"]
-
-
-def test_task_attach_none(monkeypatch):
-    """Test the task output attchment logic when nothing is expected."""
-    monkeypatch.setenv("SLACK_OAUTH_API_TOKEN", "FAKE")
-    monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
-    assert None is attach_output(
-        slacker="fake", text_data="data", name="name", out_format="none", color=""
-    )
