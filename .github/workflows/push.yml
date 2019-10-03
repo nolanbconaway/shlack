@@ -36,7 +36,7 @@ jobs:
           black shlack test --check --verbose
 
       - name: Run unit tests with Pytest
-        run: pytest --cov=./ -v
+        run: pytest --cov=./ --cov-report=xml -v
 
       - name: Upload coverage to Codecov if Python 3.7
         uses: codecov/codecov-action@v1.0.2
