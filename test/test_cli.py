@@ -91,6 +91,12 @@ def test_message(monkeypatch, args):
         ("shlack", "--help"),
         ("shlack", "task", "--help"),
         ("shlack", "message", "--help"),
+        ("python", "-m", "shlack", "--help"),
+        ("python", "-m", "shlack", "task", "--help"),
+        ("python", "-m", "shlack", "message", "--help"),
+        ("python", "-m", "shlack.cli", "--help"),
+        ("python", "-m", "shlack.cli", "task", "--help"),
+        ("python", "-m", "shlack.cli", "message", "--help"),
     ],
 )
 def test_cli_installed(args):

@@ -1,6 +1,7 @@
 # shlack
 
 [![GitHub Actions status](https://github.com/nolanbconaway/shlack/workflows/Main%20Workflow/badge.svg)](https://github.com/nolanbconaway/shlack/actions)
+[![codecov](https://codecov.io/gh/nolanbconaway/shlack/branch/master/graph/badge.svg?token=uKrscnbfoV)](https://codecov.io/gh/nolanbconaway/shlack)
 
 `shlack` is a command line tool which sends slack messages.
 
