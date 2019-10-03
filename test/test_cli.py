@@ -20,7 +20,16 @@ class MockChat:
 
 @pytest.mark.parametrize(
     "command, is_valid",
-    [("echo 1", True), ("ls INVALID_PATH", False), ("INVALD_COMMAND", False)],
+    [
+        ([], True),
+        (["echo", "1"], True),
+        (["INVALD_COMMAND"], False),
+        (["echo", "1", "-f", "text"], True),
+        (["echo", "1", "-f", "auto"], True),
+        (["echo", "1", "-f", "file"], True),
+        (["echo", "1", "-f", "none"], True),
+        (["echo", "1", "-f", "invalid"], False),
+    ],
 )
 def test_task(monkeypatch, command, is_valid):
     """Test that the task logic does not except out.
@@ -28,11 +37,14 @@ def test_task(monkeypatch, command, is_valid):
     This is NOT a test of the slack message content. I have no idea how to test that.
     """
     monkeypatch.setattr("slacker.Chat", lambda *args, **kw: MockChat())
+    monkeypatch.setattr(
+        "shlack.slack.upload_file_get_permalink", lambda *a, **kw: "URL"
+    )
     monkeypatch.setenv("SLACK_OAUTH_API_TOKEN", "FAKE")
     monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
 
     runner = CliRunner()
-    result = runner.invoke(task_cli.main, [command, "--no-detach"])
+    result = runner.invoke(task_cli.main, command + ["--no-detach"])
 
     if is_valid:
         assert result.exit_code == 0
@@ -41,7 +53,21 @@ def test_task(monkeypatch, command, is_valid):
 
 
 @pytest.mark.parametrize(
-    "args", [("OK",), ("OK", "-a", "1", "2"), ("OK", "-a", "1", "2", "-a", "3", "4")]
+    "args",
+    [
+        tuple(),
+        ("OK",),
+        ("OK", "-a", "1", "2"),
+        ("OK", "-a", "1", "2", "-a", "3", "4"),
+        ("OK", "-u", "readme.md"),
+        ("OK", "-a", "1", "2", "-u", "readme.md"),
+        ("OK", "-a", "1", "2", "-a", "3", "4", "-u", "readme.md"),
+        ("-a", "1", "2"),
+        ("-a", "1", "2", "-a", "3", "4"),
+        ("-u", "readme.md"),
+        ("-a", "1", "2", "-u", "readme.md"),
+        ("-a", "1", "2", "-a", "3", "4", "-u", "readme.md"),
+    ],
 )
 def test_message(monkeypatch, args):
     """Test that the message logic does not except out.
@@ -49,6 +75,9 @@ def test_message(monkeypatch, args):
     This is NOT a test of the slack message content. I have no idea how to test that.
     """
     monkeypatch.setattr("slacker.Chat", lambda *args, **kw: MockChat())
+    monkeypatch.setattr(
+        "shlack.slack.upload_file_get_permalink", lambda *a, **kw: "URL"
+    )
     monkeypatch.setenv("SLACK_OAUTH_API_TOKEN", "FAKE")
     monkeypatch.setenv("SLACK_CHANNEL", "ALSO_FAKE")
 
@@ -64,8 +93,16 @@ def test_message(monkeypatch, args):
         ("shlack", "--help"),
         ("shlack", "task", "--help"),
         ("shlack", "message", "--help"),
+        ("python", "-m", "shlack", "--help"),
+        ("python", "-m", "shlack", "task", "--help"),
+        ("python", "-m", "shlack", "message", "--help"),
+        ("python", "-m", "shlack.cli", "--help"),
+        ("python", "-m", "shlack.cli", "task", "--help"),
+        ("python", "-m", "shlack.cli", "message", "--help"),
+        ("python", "-m", "shlack.cli.task", "--help"),
+        ("python", "-m", "shlack.cli.message", "--help"),
     ],
 )
 def test_cli_installed(args):
     """Test that the CLI has been installed."""
-    print(subprocess.check_output(args))
+    subprocess.check_output(args)

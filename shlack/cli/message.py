@@ -1,7 +1,9 @@
 """CLI handler for running a task."""
+import sys
+
 import click
 
-from shlack.slack import attachment_formatter, slacker_factory
+from shlack import slack
 
 from . import common_options
 
@@ -17,8 +19,15 @@ _attach_help = (
 @click.option(
     "-a", "--attach", "attach", nargs=2, multiple=True, type=str, help=_attach_help
 )
+@click.option(
+    "-u",
+    "--upload",
+    "upload",
+    type=click.Path(exists=True),
+    help="Option to upload a file.",
+)
 @common_options
-def main(oauth_api_token, channel, message, attach):
+def main(oauth_api_token, channel, message, attach, upload):
     """Send a message and/or attachments from the command line.
 
     Attachments can be provided as key-value pairs
@@ -27,18 +36,32 @@ def main(oauth_api_token, channel, message, attach):
 
     """
     # define messenger
-    slacker = slacker_factory(api_key=oauth_api_token)
+    slacker = slack.slacker_factory(api_key=oauth_api_token)
 
     # format message elements
     if not attach:
         attachments = None
     else:
-        attachments = [attachment_formatter(dict(attach))]
+        attachments = [slack.attachment_formatter(dict(attach))]
 
     if message == "":
         message = None
 
-    slacker.chat.post_message(channel, text=message, attachments=attachments)
+    if upload is not None:
+
+        if attachments is None:
+            attachments = []
+
+        permalink = slack.upload_file_get_permalink(slacker, file_=upload)
+        attachments.append(slack.attachment_formatter({upload: permalink}))
+
+    # exit if nothing to do
+    if (None, None, None) == (message, attachments, upload):
+        sys.exit(0)
+
+    slacker.chat.post_message(
+        channel, text=message, attachments=attachments, unfurl_links=True
+    )
 
 
 if __name__ == "__main__":

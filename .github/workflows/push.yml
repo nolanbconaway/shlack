@@ -23,19 +23,23 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install pytest pydocstyle
+          pip install pytest pydocstyle pytest-cov codecov
           pip install .
 
-      - name: Install Black If Python >= 3.6
-        if: matrix.python-version >= 3.6
-        run: pip install black
-
-      - name: Pydocstyle
+      - name: Check Documentation with Pydocstyle
         run: pydocstyle shlack --verbose
 
-      - name: Black If Python >= 3.6
-        if: matrix.python-version >= 3.6
-        run: black shlack test --check --verbose
+      - name: Lint with Black If Python 3.7
+        if: matrix.python-version == 3.7
+        run: |
+          pip install black
+          black shlack test --check --verbose
 
-      - name: Pytest
-        run: pytest . -v
+      - name: Run unit tests with Pytest
+        run: pytest --cov=./ --cov-report=xml -v
+
+      - name: Upload coverage to Codecov if Python 3.7
+        uses: codecov/codecov-action@v1.0.2
+        if: matrix.python-version == 3.7
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
