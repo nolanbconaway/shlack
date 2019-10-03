@@ -92,4 +92,5 @@ Then you're done! Enjoy your shlack app.
 * [ ] Surface child PID to user in `shlack task` .
 * [ ] get URLs in attachments to unfurl.
 * [ ] migrate to blocks https://api.slack.com/messaging/attachments-to-blocks
+* [ ] pypi
 
