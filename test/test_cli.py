@@ -55,7 +55,7 @@ def test_task(monkeypatch, command, is_valid):
 @pytest.mark.parametrize(
     "args",
     [
-        (,),
+        tuple(),
         ("OK",),
         ("OK", "-a", "1", "2"),
         ("OK", "-a", "1", "2", "-a", "3", "4"),

@@ -25,8 +25,9 @@ def test_detachify(tmp_path):
 
     # run it and assert that it took less than the wait time to move on
     # if it took _longer_ than the function might not have been detached.
+    detached_fun = detachify(write_string)
     t1 = time.time()
-    detachify(write_string)(now_str)
+    detached_fun(now_str)
     t2 = time.time()
     assert (t2 - t1) < 0.1
 
