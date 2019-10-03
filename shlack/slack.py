@@ -7,6 +7,12 @@ import time
 from slacker import Slacker
 
 
+class SlackError(Exception):
+    """Custom error for slack issues."""
+
+    pass
+
+
 def slacker_factory(api_key=None):
     """Return a slacker object, getting the API key from the user or env."""
     if api_key is None:
@@ -15,6 +21,30 @@ def slacker_factory(api_key=None):
             raise EnvironmentError("No Oauth API key provided!")
 
     return Slacker(api_key)
+
+
+def upload_file_get_permalink(slacker, raise_error=False, *args, **kwargs):
+    """Upload a file and return the permalink.
+
+    Option to raise SlackError is there is a problem, or silently return None.
+
+    This simply handles the return value of slacker.files.upload. The signature for 
+    slacker.files.upload is:
+
+    content=None,
+    filetype=None,
+    filename=None,
+    title=None,
+    initial_comment=None,
+    channels=None,
+    thread_ts=None
+    """
+    out = slacker.files.upload(*args, **kwargs).body
+
+    if raise_error and not out["ok"]:
+        raise SlackError("Unable to upload file.")
+
+    return out.get("file", {}).get("permalink")
 
 
 def attachment_formatter(attachment, color="#DCDEE0"):

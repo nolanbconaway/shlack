@@ -1,37 +1,77 @@
 """CLI handler for running a task."""
 import sys
+from io import StringIO
 
 import click
 
-from shlack.runner import detachify, shell_command
-from shlack.slack import attachment_formatter, slacker_factory
+from shlack import runner, slack
 
 from . import common_options
+
+MAX_TEXT_LENGTH = 1000
 
 _detach_help = (
     "Option to run the task in a detached process. "
     + "This is useful when you want to close your terminal / ssh session and let a "
     + "long task run. Default --detach."
 )
+_format_help = (
+    "Format of stdout and stderr messages to send. If 'attach', the data will be "
+    + "sent as an attachment. If 'file' the data will be uploaded as a file. If "
+    + "'auto', shlack will choose between file and text depending on the content "
+    + "length. If 'none', nothing will be sent. Default 'auto'."
+)
+
+
+def attach_output(slacker, text_data, name, out_format, color):
+    """Get the attachment the user wants :-).
+
+    Attach a permalink to a file if asked or on auto and appropriate.
+    Attach plain text otherwise, clipping at 1k characters if too long.
+    Return None if the user did not ask for output
+    """
+    # do nothing if no output
+    if out_format == "none":
+        return
+
+    is_long = len(text_data) > MAX_TEXT_LENGTH
+
+    # if asked for a file, or if auto and the text are long, return a permalink to
+    # the file
+    if out_format == "file" or (out_format == "auto" and is_long):
+        permalink = slack.upload_file_get_permalink(
+            slacker, content=text_data, filetype="text", filename=name, title=name
+        )
+        return slack.attachment_formatter(
+            {("%s upload" % name): permalink or "`SlackError` raised."}, color=color
+        )
+
+    # attach if the user asked or auto and the text are short
+    if out_format == "text" or (out_format == "auto" and not is_long):
+        if is_long:
+            return slack.attachment_formatter(
+                {
+                    "": "```%s```"
+                    % (text_data[:MAX_TEXT_LENGTH] + "\n ... [remainder clipped] ...")
+                },
+                color=color,
+            )
+        return slack.attachment_formatter({"": "```%s```" % (text_data)}, color=color)
 
 
 @click.command()
 @click.argument("task", nargs=-1, type=str)
 @click.option("--detach/--no-detach", "detach", default=True, help=_detach_help)
 @click.option(
-    "--stdout/--no-stdout",
-    "send_stdout",
-    default=True,
-    help="Option to include or exclude task stdout in the slack message, if any.",
-)
-@click.option(
-    "--stderr/--no-stderr",
-    "send_stderr",
-    default=True,
-    help="Option to include or exclude task stderr in the slack message, if any.",
+    "-f",
+    "--out-format",
+    "out_format",
+    type=click.Choice({"text", "file", "auto", "none"}),
+    default="auto",
+    help=_format_help,
 )
 @common_options
-def main(oauth_api_token, channel, detach, send_stdout, send_stderr, task):
+def main(oauth_api_token, channel, detach, out_format, task):
     """Run a task and send a slack message after.
     
     $ shlack task 'sleep 5 && echo "FROM THE PAST!"' -c ... -t ...
@@ -49,44 +89,53 @@ def main(oauth_api_token, channel, detach, send_stdout, send_stderr, task):
         sys.exit(0)
 
     # define messenger
-    slacker = slacker_factory(api_key=oauth_api_token)
+    slacker = slack.slacker_factory(api_key=oauth_api_token)
     command_joined = " ".join(task)
 
     def f():
-        out, err = shell_command(command_joined)
+        out, err = runner.shell_command(command_joined)
 
-        attachments = []
-        if send_stdout and out:
-            attachments.append(attachment_formatter({"": "```%s```" % (out)}))
-
-        if send_stderr and err:
-            attachments.append(
-                attachment_formatter({"": "```%s```" % (err)}, color="danger")
+        # always attach a copy of the command
+        attachments = [
+            slack.attachment_formatter(
+                {"": "```$ %s```" % (command_joined)}, color="#000000"
             )
+        ]
 
+        # add more attachments if asked for
+        if out_format != "none":
+
+            if out:
+                attachments.append(
+                    attach_output(slacker, out, "stdout", out_format, "#439FE0")
+                )
+
+            if err:
+                attachments.append(
+                    attach_output(slacker, err, "stderr", out_format, "danger")
+                )
+
+        # add a message
         status_message = (
             "Command succeeded"
             if err is None
             else "Command exited with nonzero exit status"
         )
 
-        slacker.chat.post_message(
-            channel,
-            "%s.\n```$ %s```" % (status_message, command_joined),
-            attachments=None if not attachments else attachments,
-        )
+        # send the data
+        slacker.chat.post_message(channel, status_message, attachments=attachments)
 
         # echo out if not detached
         if not detach:
-            if out is not None:
+            if out:
                 click.echo(out)
-            if err is not None:
+            if err:
                 click.echo(err)
 
         return 0 if err is None else 1
 
     if detach:
-        detachify(f)()
+        runner.detachify(f)()
         sys.exit(0)
 
     # otherwise run in non-detached and exit if error

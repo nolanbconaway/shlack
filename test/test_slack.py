@@ -1,5 +1,6 @@
 """Tests for the slack module."""
 import pytest
+
 from shlack.slack import attachment_formatter
 
 
