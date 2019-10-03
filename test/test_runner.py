@@ -19,7 +19,7 @@ def test_detachify(tmp_path):
 
     def write_string(s):
         """Write a string to the temp file."""
-        time.sleep(0.05)
+        time.sleep(0.1)
         with open(str(tmp_file), "w") as f:
             f.write(s)
 
@@ -28,7 +28,7 @@ def test_detachify(tmp_path):
     t1 = time.time()
     detachify(write_string)(now_str)
     t2 = time.time()
-    assert (t2 - t1) < 0.05
+    assert (t2 - t1) < 0.1
 
     # wait a little and check the file that was written.
     time.sleep(0.15)
