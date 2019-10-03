@@ -72,7 +72,7 @@ Slack should take you to an app management page. Hit the "Permissions" button (o
 Scroll down to the "Scopes" section. Add the following two scopes:
 
 1. `chat:write:bot` . Shlack needs this to post messages.
-2. `files:write:user` . Shlack does not use this scope at present, but one day will upload the output of more verbose tasks as files rather than as messages.
+2. `files:write:user` . Shlack needs this to upload files when e.g., your task output is very long.
 
 Hit the "Save Changes" button once those two scopes are selected. Then scroll to the top of the page and hit the "Install App to Workspace" button. Slack will ask you to allow the app to access the scopes you set up.
 
