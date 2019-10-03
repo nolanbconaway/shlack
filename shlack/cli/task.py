@@ -8,7 +8,7 @@ from shlack import runner, slack
 
 from . import common_options
 
-MAX_TEXT_LENGTH = 1000
+MAX_TEXT_LENGTH = 750
 
 _detach_help = (
     "Option to run the task in a detached process. "
