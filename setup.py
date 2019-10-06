@@ -1,5 +1,7 @@
 """Setup the package."""
 
+import os
+
 from setuptools import find_packages, setup
 
 MIT_LICENSE = """
@@ -24,10 +26,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+# use readme as long description
+README_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "readme.md")
+
+with open(README_PATH) as file_:
+    LONG_DESCRIPTION = file_.read()
+
 setup(
     name="shlack",
     version="0.1.1",
     description="Yet another slack command line interface.",
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     author="Nolan Conaway",
     author_email="nolanbconaway@gmail.com",
     url="https://github.com/nolanbconaway/shlack",
