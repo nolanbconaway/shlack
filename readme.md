@@ -2,14 +2,22 @@
 
 [![GitHub Actions status](https://github.com/nolanbconaway/shlack/workflows/Main%20Workflow/badge.svg)](https://github.com/nolanbconaway/shlack/actions)
 [![codecov](https://codecov.io/gh/nolanbconaway/shlack/branch/master/graph/badge.svg?token=uKrscnbfoV)](https://codecov.io/gh/nolanbconaway/shlack)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/shlack)](https://pypi.org/project/shlack/)
+[![PyPI](https://img.shields.io/pypi/v/shlack)](https://pypi.org/project/shlack/)
 
-`shlack` is a command line tool which sends slack messages. It is a lot like [jarjar](https://github.com/AusterweilLab/jarjar) but with [a few (important?) differences](shlack-and-jarjar.md).
+shlack is a command line tool which sends slack messages. It is a lot like [jarjar](https://github.com/AusterweilLab/jarjar) but with [a few (important?) differences](shlack-and-jarjar.md).
 
 ## Quickstart
 
 First, [set up a slack app](#setting-up-a-slack-app) for shlack and have the oauth API token handy.
 
 Then install shlack to your python 2.7, 3.5, 3.6, or 3.7 environment:
+
+``` sh
+pip install shlack
+```
+
+Or
 
 ``` sh
 pip install git+https://github.com/nolanbconaway/shlack.git
@@ -92,5 +100,5 @@ Then you're done! Enjoy your shlack app.
 * [ ] Surface child PID to user in `shlack task` .
 * [ ] get URLs in attachments to unfurl.
 * [ ] migrate to blocks https://api.slack.com/messaging/attachments-to-blocks
-* [ ] pypi
+* [x] pypi
 
