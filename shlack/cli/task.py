@@ -14,7 +14,7 @@ _detach_help = (
     + "long task run. Default --detach."
 )
 _format_help = (
-    "Format of stdout and stderr messages to send. If 'attach', the data will be "
+    "Format of stdout and stderr messages to send. If 'text', the data will be "
     + "sent as an attachment. If 'file' the data will be uploaded as a file. If "
     + "'auto', shlack will choose between file and text depending on the content "
     + "length. If 'none', nothing will be sent. Default 'auto'."
